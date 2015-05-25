@@ -1,10 +1,10 @@
 package org.restfulpi.endpoint;
 
-import java.util.Properties;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -23,7 +23,7 @@ public class RestEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public GetAllPinsResponse getProvisionedPins(@Context HttpServletRequest incomingRequest) {
-		log.info("Get Outlets request from " + incomingRequest.getRemoteHost());
+		log.info("API request from " + incomingRequest.getRemoteHost());
 		return controller.getPins();
 	}
 	
@@ -31,7 +31,7 @@ public class RestEndpoint {
 	@Path("outputpins")
 	@Produces(MediaType.APPLICATION_JSON)
 	public GetPinsResponse getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
-		log.info("Get Outlets request from " + incomingRequest.getRemoteHost());
+		log.info("Get Output pins request from " + incomingRequest.getRemoteHost());
 		return controller.getOutputPins();
 	}
 	
@@ -39,7 +39,16 @@ public class RestEndpoint {
 	@Path("inputpins")
 	@Produces(MediaType.APPLICATION_JSON)
 	public GetPinsResponse getProvisionedInputPins(@Context HttpServletRequest incomingRequest) {
-		log.info("Get Outlets request from " + incomingRequest.getRemoteHost());
+		log.info("Get Input pins request from " + incomingRequest.getRemoteHost());
 		return controller.getInputPins();
+	}
+	
+	@POST
+	@Path("outputpins/{pin}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public GetPinResponse provisionNewOutputPin(@Context HttpServletRequest incomingRequest,
+			@PathParam("pin") int pinNumber) {
+		log.info("Provision pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
+		return controller.provisionOutputPin(pinNumber);
 	}
 }

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.restfulpi.PropertiesReader;
+import org.restfulpi.endpoint.GetPinResponse;
 import org.restfulpi.endpoint.GetPinsResponse;
 
 public class GPIORequestHandler {
@@ -16,10 +17,15 @@ public class GPIORequestHandler {
 	ArrayList<NumberedPin> outputPins;
 	ArrayList<NumberedPin> inputPins;
 	
+	private static final String INPUT_PINS_PROP_NAME = "inputPins";
+	private static final String OUTPUT_PINS_PROP_NAME = "outputPins";
+	
 	public GPIORequestHandler() {
+		outputPins = new ArrayList<NumberedPin>();
+		inputPins = new ArrayList<NumberedPin>();
 		try {
-			outputPins.addAll(getNumberedPinsFromStrings(props.getProperty("outputPins").split(",")));
-			inputPins.addAll(getNumberedPinsFromStrings(props.getProperty("inputPins").split(",")));
+			outputPins.addAll(getNumberedPinsFromStrings(props.getProperty(OUTPUT_PINS_PROP_NAME).split(",")));
+			inputPins.addAll(getNumberedPinsFromStrings(props.getProperty(INPUT_PINS_PROP_NAME).split(",")));
 		} catch (Exception e) {
 			log.error("Error Reading Properties File for inputPins or outputPins", e);
 		}
@@ -44,6 +50,9 @@ public class GPIORequestHandler {
 	public GetAllPinsResponse getPins() {
 		return new GetAllPinsResponse(inputPins, outputPins);
 	}
-	
-	
+
+	public GetPinResponse provisionOutputPin(int pinNumber) {
+		//TODO: implement
+		return null;
+	}
 }
