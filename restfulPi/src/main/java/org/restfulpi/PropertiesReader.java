@@ -11,6 +11,8 @@ import org.apache.logging.log4j.Logger;
 
 public class PropertiesReader {
 
+	private static final String INPUT_PINS_PROPERTY_NAME = "inputPins";
+	private static final Object OUTPUT_PINS_PROPERTY_NAME = "outputPins";
 	private static final String DEFAULT_PORT = "8080";
 	private static final String DEFAULT_PORT_PROPERTY_NAME = "port";
 	private static final String REST_PROPERTIES_NAME = "restProperties";
@@ -36,6 +38,8 @@ public class PropertiesReader {
 
 	private void loadDefaultOptions() {
 		properties.put(DEFAULT_PORT_PROPERTY_NAME, DEFAULT_PORT);
+		properties.put(INPUT_PINS_PROPERTY_NAME, "");
+		properties.put(OUTPUT_PINS_PROPERTY_NAME, "");
 	}
 
 	public String getProperty(String key) throws Exception {
