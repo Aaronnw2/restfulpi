@@ -1,6 +1,8 @@
-package org.restfulpi.gpio;
+package org.restfulpi.response;
 
 import java.util.ArrayList;
+
+import org.restfulpi.gpio.NumberedPin;
 
 public class GetAllPinsResponse {
 

@@ -16,6 +16,8 @@ public class Init {
 	private static final String PORT_PROPERTY_NAME = "port";
 	private static final String ENDPOINTS_PACKAGE_VALUE = "org.restfulpi.endpoint";
 	private static final String JERSEY_PROVIDER_PACKAGE_PROPERTY = "jersey.config.server.provider.packages";
+	private static final String CORS_FILTER_PROPERTY = "com.sun.jersey.spi.container.ContainerResponseFilters";
+	private static final String CORS_FILTER_VALUE = "org.webservice.endpoints.security.ResponseCORSFilter";
 	private static final String JSON_MAPPING_PROPERTY = "com.sun.jersey.api.json.POJOMappingFeature";
 	private static final String JSON_MAPPING_VALUE = "true";
 	private static final String RESOURCE_BASE = "web/";
@@ -34,6 +36,9 @@ public class Init {
 
 			ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, API_CONTEXT_PATH);
 			jerseyServlet.setInitOrder(0);
+			if(props.getProperty("CORS").toLowerCase().equals("true")){
+				jerseyServlet.setInitParameter(CORS_FILTER_PROPERTY, CORS_FILTER_VALUE);
+			}
 			jerseyServlet.setInitParameter(JERSEY_PROVIDER_PACKAGE_PROPERTY, ENDPOINTS_PACKAGE_VALUE);
 			jerseyServlet.setInitParameter(JSON_MAPPING_PROPERTY, JSON_MAPPING_VALUE);
 
@@ -43,7 +48,7 @@ public class Init {
 			jettyServer.start();
 			jettyServer.join();
 		} catch (Exception e) {
-			log.error("Error in class: " + e.getMessage(), e);
+			log.error("Error in server initialization: " + e.getMessage(), e);
 		} finally {
 			jettyServer.destroy();
 		}

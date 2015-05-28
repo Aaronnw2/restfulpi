@@ -1,4 +1,4 @@
-package org.restfulpi.endpoint;
+package org.restfulpi.response;
 
 import java.util.ArrayList;
 

@@ -12,7 +12,9 @@ import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.restfulpi.gpio.GPIORequestHandler;
-import org.restfulpi.gpio.GetAllPinsResponse;
+import org.restfulpi.response.GetAllPinsResponse;
+import org.restfulpi.response.GetPinResponse;
+import org.restfulpi.response.GetPinsResponse;
 
 @Path("/api")
 public class RestEndpoint {

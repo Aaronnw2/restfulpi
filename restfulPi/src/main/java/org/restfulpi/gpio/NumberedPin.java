@@ -68,4 +68,9 @@ public enum NumberedPin {
 		}
 		return NO_SUCH_PIN;
 	}
+	
+	@Override
+	public String toString() {
+		return pin.toString() + " " + gpioPinNumber;
+	}
 }

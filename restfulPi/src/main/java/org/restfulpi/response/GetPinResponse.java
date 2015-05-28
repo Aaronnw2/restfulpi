@@ -1,4 +1,4 @@
-package org.restfulpi.endpoint;
+package org.restfulpi.response;
 
 import org.restfulpi.gpio.NumberedPin;
 
