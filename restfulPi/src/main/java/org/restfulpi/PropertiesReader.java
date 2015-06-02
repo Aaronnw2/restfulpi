@@ -11,17 +11,30 @@ import org.apache.logging.log4j.Logger;
 
 public class PropertiesReader {
 
-	private static final String INPUT_PINS_PROPERTY_NAME = "inputPins";
-	private static final String OUTPUT_PINS_PROPERTY_NAME = "outputPins";
-	private static final String DEFAULT_PORT = "8080";
-	private static final String DEFAULT_PORT_PROPERTY_NAME = "port";
+	private static final String EMPTY_STRING = "";
+	private static final String FALSE_STRING = "false";
+	public static final String BASIC_AUTH_PROPERTY_NAME = "basic_auth_on";
+	public static final String WEB_DIRECTORY_PROPERTY_NAME = "web_directory";
+	public static final String SSL_PROPERTY_NAME = "ssl_on";
+	public static final String CORS_HEADERS_PROPERTY_NAME = "CORS_headers";
+	public static final String INPUT_PINS_PROPERTY_NAME = "input_pins";
+	public static final String OUTPUT_PINS_PROPERTY_NAME = "output_pins";
+	public static final String DEFAULT_PORT = "8080";
+	public static final String DEFAULT_PORT_PROPERTY_NAME = "port";
 	private static final String REST_PROPERTIES_NAME = "restProperties";
 	private static final String DEFAULT_FILE_LOCATION = "/home/pi/rest.properties";
 	private Properties properties;
 
+	private static PropertiesReader PROPERTIES_READER;
+	
 	private static final Logger log = LogManager.getLogger();
 
-	public PropertiesReader() {
+	public static PropertiesReader getInstance() {
+		if(PROPERTIES_READER == null) PROPERTIES_READER = new PropertiesReader();
+		return PROPERTIES_READER;
+	}
+	
+	protected PropertiesReader() {
 		properties = new Properties();
 		String javaOption = System.getProperty(REST_PROPERTIES_NAME);
 		if(isNotNullOrEmpty(javaOption) && fileExists(javaOption)) {
@@ -31,21 +44,26 @@ public class PropertiesReader {
 			log.info("Loading initial configuration from " + DEFAULT_FILE_LOCATION);	
 			loadProperties(DEFAULT_FILE_LOCATION);
 		} else {
-			log.info("Java option not set, and no default file found. No initial configuration used");
+			log.info("Java option for properties file not set, and no default file found. No initial configuration used");
 			loadDefaultOptions();
 		}
 	}
 
 	private void loadDefaultOptions() {
 		properties.put(DEFAULT_PORT_PROPERTY_NAME, DEFAULT_PORT);
-		properties.put(INPUT_PINS_PROPERTY_NAME, "");
-		properties.put(OUTPUT_PINS_PROPERTY_NAME, "");
+		properties.put(INPUT_PINS_PROPERTY_NAME, EMPTY_STRING);
+		properties.put(OUTPUT_PINS_PROPERTY_NAME, EMPTY_STRING);
+		properties.put(WEB_DIRECTORY_PROPERTY_NAME, EMPTY_STRING);
+		properties.put(CORS_HEADERS_PROPERTY_NAME, FALSE_STRING);
+		properties.put(SSL_PROPERTY_NAME, FALSE_STRING);
+		properties.put(BASIC_AUTH_PROPERTY_NAME, FALSE_STRING);
 	}
 
 	public String getProperty(String key) throws Exception {
 		String value = properties.getProperty(key);
-		if(isNotNullOrEmpty(value)) return value;
-		else throw new PropertyNotFoundException("Property \"" + key + "\" empty or not found");
+		if(value != null) return value;
+		log.error("A value for \"" + key + "\" was not found");
+		return EMPTY_STRING;
 	}
 
 	public Properties getProperties() {
@@ -67,7 +85,7 @@ public class PropertiesReader {
 
 	private boolean isNotNullOrEmpty(String property) {
 		if(property == null) return false;
-		if(property.equals("")) return false;
+		if(property.equals(EMPTY_STRING)) return false;
 		return true;
 	}
 

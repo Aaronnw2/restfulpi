@@ -1,18 +1,17 @@
 package org.restfulpi.response;
 
-import org.restfulpi.gpio.NumberedPin;
 
 public class GetPinResponse {
 
-	private NumberedPin pin;
+	private PinInformation pin;
 	
 	public GetPinResponse() {}
 
-	public NumberedPin getPin() {
+	public PinInformation getPin() {
 		return pin;
 	}
 
-	public void setPin(NumberedPin pin) {
+	public void setPin(PinInformation pin) {
 		this.pin = pin;
 	}
 	

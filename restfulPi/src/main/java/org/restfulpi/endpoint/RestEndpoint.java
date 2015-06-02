@@ -1,5 +1,7 @@
 package org.restfulpi.endpoint;
 
+import static org.restfulpi.gpio.GPIORequestHandler.getInstance;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -19,7 +21,7 @@ import org.restfulpi.response.GetPinsResponse;
 @Path("/api")
 public class RestEndpoint {
 
-	private static final GPIORequestHandler controller = new GPIORequestHandler();
+	private static GPIORequestHandler controller = getInstance();
 	private static final Logger log = LogManager.getLogger();
 	
 	@GET
@@ -35,6 +37,14 @@ public class RestEndpoint {
 	public GetPinsResponse getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
 		log.info("Get Output pins request from " + incomingRequest.getRemoteHost());
 		return controller.getOutputPins();
+	}
+	
+	@GET
+	@Path("outputpins/{pin}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public GetPinResponse getInputPin(@Context HttpServletRequest incomingRequest, @PathParam("pin") int pinNumber) {
+		log.info("Get Output pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
+		return controller.getOutputPin(pinNumber);
 	}
 	
 	@GET

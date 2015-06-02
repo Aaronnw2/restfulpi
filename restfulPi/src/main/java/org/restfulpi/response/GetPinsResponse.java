@@ -2,24 +2,22 @@ package org.restfulpi.response;
 
 import java.util.ArrayList;
 
-import org.restfulpi.gpio.NumberedPin;
-
 public class GetPinsResponse {
 
-	private ArrayList<NumberedPin> pins;
+	private ArrayList<PinInformation> pins;
 	private int totalPins;
 	
 	public GetPinsResponse() {}
 	
-	public GetPinsResponse(ArrayList<NumberedPin> inPins) {
+	public GetPinsResponse(ArrayList<PinInformation> inPins) {
 		pins = inPins;
 		totalPins = pins.size();
 	}
 	
-	public ArrayList<NumberedPin> getOutlets() {
+	public ArrayList<PinInformation> getOutlets() {
 		return pins;
 	}
-	public void setOutlets(ArrayList<NumberedPin> inPins) {
+	public void setOutlets(ArrayList<PinInformation> inPins) {
 		pins = inPins;
 	}
 	public int getTotalPins() {

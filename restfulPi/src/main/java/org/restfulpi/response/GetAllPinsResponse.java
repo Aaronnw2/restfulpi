@@ -6,15 +6,15 @@ import org.restfulpi.gpio.NumberedPin;
 
 public class GetAllPinsResponse {
 
-	private ArrayList<NumberedPin> inputPins;
-	private ArrayList<NumberedPin> outputPins;
+	private ArrayList<PinInformation> inputPins;
+	private ArrayList<PinInformation> outputPins;
 	private int totalInputPins;
 	private int totalOutputPins;
 	private int totalPins;
 	
 	public GetAllPinsResponse() {}
 	
-	public GetAllPinsResponse(ArrayList<NumberedPin> inputList, ArrayList<NumberedPin> outputList) {
+	public GetAllPinsResponse(ArrayList<PinInformation> inputList, ArrayList<PinInformation> outputList) {
 		inputPins = inputList;
 		outputPins = outputList;
 		totalInputPins = inputList.size();
@@ -22,16 +22,16 @@ public class GetAllPinsResponse {
 		totalPins = totalInputPins + totalOutputPins;
 	}
 	
-	public ArrayList<NumberedPin> getInputPins() {
+	public ArrayList<PinInformation> getInputPins() {
 		return inputPins;
 	}
-	public void setInputPins(ArrayList<NumberedPin> inputPins) {
+	public void setInputPins(ArrayList<PinInformation> inputPins) {
 		this.inputPins = inputPins;
 	}
-	public ArrayList<NumberedPin> getOutputPins() {
+	public ArrayList<PinInformation> getOutputPins() {
 		return outputPins;
 	}
-	public void setOutputPins(ArrayList<NumberedPin> outputPins) {
+	public void setOutputPins(ArrayList<PinInformation> outputPins) {
 		this.outputPins = outputPins;
 	}
 	public int getTotalInputPins() {
