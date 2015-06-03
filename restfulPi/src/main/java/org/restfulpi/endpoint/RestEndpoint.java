@@ -14,7 +14,6 @@ import javax.ws.rs.core.MediaType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.restfulpi.gpio.GPIORequestHandler;
-import org.restfulpi.response.GetAllPinsResponse;
 import org.restfulpi.response.GetPinResponse;
 import org.restfulpi.response.GetPinsResponse;
 
@@ -26,7 +25,7 @@ public class RestEndpoint {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public GetAllPinsResponse getProvisionedPins(@Context HttpServletRequest incomingRequest) {
+	public GetPinsResponse getProvisionedPins(@Context HttpServletRequest incomingRequest) {
 		log.info("API request from " + incomingRequest.getRemoteHost());
 		return controller.getPins();
 	}
@@ -36,7 +35,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public GetPinsResponse getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
 		log.info("Get Output pins request from " + incomingRequest.getRemoteHost());
-		return controller.getOutputPins();
+		return controller.getPins();
 	}
 	
 	@GET
@@ -44,17 +43,10 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public GetPinResponse getInputPin(@Context HttpServletRequest incomingRequest, @PathParam("pin") int pinNumber) {
 		log.info("Get Output pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		return controller.getOutputPin(pinNumber);
+		return controller.getPin(pinNumber);
 	}
 	
-	@GET
-	@Path("inputpins")
-	@Produces(MediaType.APPLICATION_JSON)
-	public GetPinsResponse getProvisionedInputPins(@Context HttpServletRequest incomingRequest) {
-		log.info("Get Input pins request from " + incomingRequest.getRemoteHost());
-		return controller.getInputPins();
-	}
-	
+	//TODO: post will include name and type (input/output)
 	@POST
 	@Path("outputpins/{pin}")
 	@Produces(MediaType.APPLICATION_JSON)

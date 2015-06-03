@@ -11,8 +11,6 @@ import org.apache.logging.log4j.Logger;
 
 public class PropertiesReader {
 
-	private static final String EMPTY_STRING = "";
-	private static final String FALSE_STRING = "false";
 	public static final String BASIC_AUTH_PROPERTY_NAME = "basic_auth_on";
 	public static final String WEB_DIRECTORY_PROPERTY_NAME = "web_directory";
 	public static final String SSL_PROPERTY_NAME = "ssl_on";
@@ -21,7 +19,10 @@ public class PropertiesReader {
 	public static final String OUTPUT_PINS_PROPERTY_NAME = "output_pins";
 	public static final String DEFAULT_PORT = "8080";
 	public static final String DEFAULT_PORT_PROPERTY_NAME = "port";
-	private static final String REST_PROPERTIES_NAME = "restProperties";
+	
+	private static final String EMPTY_STRING = "";
+	private static final String FALSE_STRING = "false";
+	private static final String REST_PROPERTIES_SYSTEM_OPTION = "restProperties";
 	private static final String DEFAULT_FILE_LOCATION = "/home/pi/rest.properties";
 	private Properties properties;
 
@@ -36,7 +37,7 @@ public class PropertiesReader {
 	
 	protected PropertiesReader() {
 		properties = new Properties();
-		String javaOption = System.getProperty(REST_PROPERTIES_NAME);
+		String javaOption = System.getProperty(REST_PROPERTIES_SYSTEM_OPTION);
 		if(isNotNullOrEmpty(javaOption) && fileExists(javaOption)) {
 			log.info("Loading initial configuration from " + javaOption);
 			loadProperties(javaOption);
@@ -71,6 +72,7 @@ public class PropertiesReader {
 	}
 
 	private void loadProperties(String propFileAndPath) {
+		loadDefaultOptions();
 		FileInputStream in;
 		try {
 			in = new FileInputStream(propFileAndPath);

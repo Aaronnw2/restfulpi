@@ -1,11 +1,14 @@
 package org.restfulpi.response;
 
-
-public class GetPinResponse {
+public class GetPinResponse extends Response{
 
 	private PinInformation pin;
 	
-	public GetPinResponse() {}
+	public GetPinResponse(PinInformation inPinInfo, Boolean inSuccess, String inMessage) {
+		pin = inPinInfo;
+		success = inSuccess;
+		message = inMessage;
+	}
 
 	public PinInformation getPin() {
 		return pin;

@@ -1,5 +1,6 @@
 package org.restfulpi.gpio;
 
+import org.restfulpi.response.GetPinResponse;
 import org.restfulpi.response.PinInformation;
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -48,5 +49,20 @@ public class OutputPin implements GPIOPin{
 
 	public void setProvisionedPin(GpioPinDigitalOutput provisionedPin) {
 		this.provisionedPin = provisionedPin;
+	}
+
+	public GetPinResponse processHigh() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public GetPinResponse processLow() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public GetPinResponse processStatus() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

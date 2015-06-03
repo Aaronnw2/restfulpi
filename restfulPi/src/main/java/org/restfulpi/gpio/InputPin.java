@@ -1,5 +1,6 @@
 package org.restfulpi.gpio;
 
+import org.restfulpi.response.GetPinResponse;
 import org.restfulpi.response.PinInformation;
 
 import com.pi4j.io.gpio.GpioPinDigitalInput;
@@ -51,5 +52,19 @@ public class InputPin implements GPIOPin{
 
 	public void setProvisionedPin(GpioPinDigitalInput provisionedPin) {
 		this.provisionedPin = provisionedPin;
+	}
+
+
+	public GetPinResponse processHigh() {
+		return new GetPinResponse(getPinResponseInformation(), false, "Operation not valid for an input pin");
+	}
+
+	public GetPinResponse processLow() {
+		return new GetPinResponse(getPinResponseInformation(), false, "Operation not valid for an input pin");
+	}
+
+
+	public GetPinResponse processStatus() {
+		return null;
 	}
 }
