@@ -5,6 +5,16 @@ public class Response {
 	protected boolean success;
 	protected String message;
 	
+	public Response(Boolean inSuccess, String inMessage) {
+		success = inSuccess;
+		message = inMessage;
+	}
+	
+	public Response() {
+		success = false;
+		message= "";
+	}
+	
 	public boolean isSuccess() {
 		return success;
 	}

@@ -4,7 +4,6 @@ import org.restfulpi.response.GetPinResponse;
 import org.restfulpi.response.PinInformation;
 
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.PinState;
 
 public class OutputPin implements GPIOPin{
 
@@ -27,12 +26,7 @@ public class OutputPin implements GPIOPin{
 	}
 
 	public PinInformation getPinResponseInformation() {
-		return new PinInformation(numberedPin.getGPIOPinNumber(), pinName, getPinState());
-	}
-
-	private PinState getPinState() {
-		// TODO Auto-generated method stub
-		return null;
+		return new PinInformation(numberedPin.getGPIOPinNumber(), pinName, provisionedPin.getState());
 	}
 
 	public String getPinName() {

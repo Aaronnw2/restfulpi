@@ -27,7 +27,7 @@ public class InitializationController {
 	private static final String JSON_MAPPING_VALUE = "true";
 	//TODO: change this for web to use the root path, and api use /api path
 	private static final String WEB_CONTEXT_PATH = "/web/*";
-	private static final String API_CONTEXT_PATH = "/*";
+	private static final String API_CONTEXT_PATH = "/pins/*";
 
 	public static void main(String[] args) {
 		

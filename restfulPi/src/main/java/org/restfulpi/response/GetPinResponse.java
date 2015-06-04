@@ -5,9 +5,8 @@ public class GetPinResponse extends Response{
 	private PinInformation pin;
 	
 	public GetPinResponse(PinInformation inPinInfo, Boolean inSuccess, String inMessage) {
+		super(inSuccess, inMessage);
 		pin = inPinInfo;
-		success = inSuccess;
-		message = inMessage;
 	}
 
 	public PinInformation getPin() {

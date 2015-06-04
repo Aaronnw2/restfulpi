@@ -6,7 +6,7 @@ public class PinInformation {
 
 	private int pinNumber;
 	private String pinName;
-	private PinState state; //either high/low for output, or whatever the current data is for input
+	private PinState state;
 	
 	public PinInformation() {
 		pinNumber = -1;

@@ -10,19 +10,20 @@ import org.apache.logging.log4j.Logger;
 import org.restfulpi.PropertiesReader;
 import org.restfulpi.response.GetPinResponse;
 import org.restfulpi.response.GetPinsResponse;
+import org.restfulpi.response.PinInformation;
+import org.restfulpi.response.Response;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.PinState;
 
 public class GPIORequestHandler {
 
 	private final static Logger log = LogManager.getLogger();
 	private static final PropertiesReader props = PropertiesReader.getInstance();
 	
-	private static final GpioController controller = GpioFactory.getInstance();
-	
+	//private static final GpioController controller = GpioFactory.getInstance();
 	ArrayList<GPIOPin> pins;
-
 	private static GPIORequestHandler HANDLER;
 	
 	public static GPIORequestHandler getInstance() {
@@ -46,23 +47,45 @@ public class GPIORequestHandler {
 		//TODO: use <PinNumber>:<PinName>, for properties file
 		for(String currentPinString: numberStrings) {
 			NumberedPin currentNumberedPin = getNumberedPinFromNumber(Integer.parseInt(currentPinString));
-			retList.add(new OutputPin(currentNumberedPin, "Dummy_name", controller.provisionDigitalOutputPin(currentNumberedPin.getPin())));
+			retList.add(new OutputPin(currentNumberedPin, "Dummy_name", null));
 		}
 		return retList;
 	}
 
-	public GetPinResponse provisionOutputPin(int pinNumber) {
+	public GetPinResponse provisionPin(int pinNumber, String inName, String inInitialState) {
 		NumberedPin inPin = getNumberedPinFromNumber(pinNumber);
-		controller.provisionDigitalInputPin(inPin.getPin(), "test");
-		return null;
+		try {
+			OutputPin newPin= new OutputPin(inPin, inName, null);
+			return new GetPinResponse(newPin.getPinResponseInformation(), true, "Pin " + pinNumber + " provisioned as " + inName);
+		} catch(Exception e) {
+			log.error("Error provisioning pin " + pinNumber, e);
+			return new GetPinResponse(new PinInformation(pinNumber, inName, null), false, "Error provisioning pin " + pinNumber + ":" + e.getMessage());
+		}
 	}
 
 	public GetPinsResponse getPins() {
-		// TODO Auto-generated method stub
-		return new GetPinsResponse();
+		return new GetPinsResponse(buildPinInformationList(), true, "Request Completed");
+	}
+
+	private ArrayList<PinInformation> buildPinInformationList() {
+		ArrayList<PinInformation> retList = new ArrayList<PinInformation>();
+		for(GPIOPin currentPin: pins) {
+			retList.add(currentPin.getPinResponseInformation());
+		}
+		return retList;
 	}
 
 	public GetPinResponse getPin(int pinNumber) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public GetPinResponse setPinHigh(int pinNumber) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public GetPinResponse setPinLow(int pinNumber) {
 		// TODO Auto-generated method stub
 		return null;
 	}
