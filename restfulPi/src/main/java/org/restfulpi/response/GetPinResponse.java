@@ -1,6 +1,6 @@
 package org.restfulpi.response;
 
-public class GetPinResponse extends Response{
+public class GetPinResponse extends HTTPResponse{
 
 	private PinInformation pin;
 	

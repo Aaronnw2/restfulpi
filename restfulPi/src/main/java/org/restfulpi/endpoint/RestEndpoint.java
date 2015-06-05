@@ -2,6 +2,9 @@ package org.restfulpi.endpoint;
 
 import static org.restfulpi.gpio.GPIORequestHandler.getInstance;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -12,6 +15,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,7 +23,6 @@ import org.restfulpi.gpio.GPIORequestHandler;
 import org.restfulpi.gpio.ProvisionPinRequest;
 import org.restfulpi.response.GetPinResponse;
 import org.restfulpi.response.GetPinsResponse;
-import org.restfulpi.response.Response;
 
 @Path("/")
 public class RestEndpoint {
@@ -29,27 +32,32 @@ public class RestEndpoint {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public GetPinsResponse getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
+	public Response getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
 		log.info("Get pins request from " + incomingRequest.getRemoteHost());
-		return controller.getPins();
+		return Response.ok(controller.getPins()).build();
 	}
 	
 	@GET
 	@Path("/{pin}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public GetPinResponse getPin(@Context HttpServletRequest incomingRequest, @PathParam("pin") int pinNumber) {
+	public Response getPin(@Context HttpServletRequest incomingRequest, @PathParam("pin") int pinNumber) {
 		log.info("Get Output pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		return controller.getPin(pinNumber);
+		return Response.ok(controller.getPin(pinNumber)).build();
 	}
 	
 	@POST
 	@Path("/{pin}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public GetPinResponse provisionNewPin(@Context HttpServletRequest incomingRequest,
+	public Response provisionNewPin(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber, ProvisionPinRequest provisionRequest) {
 		log.info("Provision pin request for " + pinNumber + " as \"stand in\"" + " from " + incomingRequest.getRemoteHost());
-		return controller.provisionPin(pinNumber, provisionRequest.getName(), provisionRequest.getInitialState());
+		try {
+			return Response.created(new URI("/pins/" + pinNumber)).entity(
+					controller.provisionPin(pinNumber, provisionRequest.getName(), provisionRequest.getInitialState())).build();
+		} catch (URISyntaxException e) {
+			return Response.serverError().build();
+		}
 	}
 	
 	@PUT
@@ -58,7 +66,7 @@ public class RestEndpoint {
 	public Response setPinHigh(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
 		log.info("Provision pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		return controller.setPinHigh(pinNumber);
+		return Response.ok(controller.setPinHigh(pinNumber)).build();
 	}
 	
 	@PUT
@@ -67,6 +75,6 @@ public class RestEndpoint {
 	public Response setPinLow(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
 		log.info("Provision pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		return controller.setPinLow(pinNumber);
+		return Response.ok(controller.setPinLow(pinNumber)).build();
 	}
 }

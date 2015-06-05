@@ -2,7 +2,7 @@ package org.restfulpi.response;
 
 import java.util.ArrayList;
 
-public class GetPinsResponse extends Response {
+public class GetPinsResponse extends HTTPResponse {
 
 	private ArrayList<PinInformation> pins;
 	private int totalPins;

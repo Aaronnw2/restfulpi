@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.restfulpi.PropertiesReader;
 import org.restfulpi.response.GetPinResponse;
 import org.restfulpi.response.GetPinsResponse;
+import org.restfulpi.response.HTTPResponse;
 import org.restfulpi.response.PinInformation;
-import org.restfulpi.response.Response;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -52,18 +52,18 @@ public class GPIORequestHandler {
 		return retList;
 	}
 
-	public GetPinResponse provisionPin(int pinNumber, String inName, String inInitialState) {
+	public HTTPResponse provisionPin(int pinNumber, String inName, String inInitialState) {
 		NumberedPin inPin = getNumberedPinFromNumber(pinNumber);
 		try {
 			OutputPin newPin= new OutputPin(inPin, inName, null);
 			return new GetPinResponse(newPin.getPinResponseInformation(), true, "Pin " + pinNumber + " provisioned as " + inName);
 		} catch(Exception e) {
 			log.error("Error provisioning pin " + pinNumber, e);
-			return new GetPinResponse(new PinInformation(pinNumber, inName, null), false, "Error provisioning pin " + pinNumber + ":" + e.getMessage());
+			return new HTTPResponse(false, "Error provisioning pin " + pinNumber + ":" + e.getMessage());
 		}
 	}
 
-	public GetPinsResponse getPins() {
+	public HTTPResponse getPins() {
 		return new GetPinsResponse(buildPinInformationList(), true, "Request Completed");
 	}
 
@@ -75,18 +75,18 @@ public class GPIORequestHandler {
 		return retList;
 	}
 
-	public GetPinResponse getPin(int pinNumber) {
+	public HTTPResponse getPin(int pinNumber) {
 		// TODO Auto-generated method stub
-		return null;
+		return new HTTPResponse(true, "Request Completed");
 	}
 
-	public GetPinResponse setPinHigh(int pinNumber) {
+	public HTTPResponse setPinHigh(int pinNumber) {
 		// TODO Auto-generated method stub
-		return null;
+		return new HTTPResponse(true, "Request Completed");
 	}
 
-	public GetPinResponse setPinLow(int pinNumber) {
+	public HTTPResponse setPinLow(int pinNumber) {
 		// TODO Auto-generated method stub
-		return null;
+		return new HTTPResponse(true, "Request Completed");
 	}
 }
