@@ -32,7 +32,7 @@ Download the latest release, copy to your Pi, and run with "sudo java -jar restf
 You can change defaults and set up advanced features using a properties file. RestfulPi will automatically check the for file /home/pi/rest.properties and use the settings in it. You can specify a different file by adding the java option -Drestproperties="\<file path and name\>". RestfulPi has the following options:
 * port: Change the port that RestfulPi will run on
 * output_pins: pins to automatically provision on start up. Pins are comma seperated and in the format \<pin number\>:\<pin name\>
-* CORS_headers: include on CORS headers for cross site requests
+* CORS_headers: include CORS headers for cross site requests
 * web_directory: RestfulPi will serve static web content from the specified folder
 * ~~ssl_on: turn on ssl. This requires the keystore and keystore_password properties be set~~
 * ~~basic_auth_on: turn on basic HTTP authentication using Jettys HashLoginService. This requires an additional properties file to specify users, passwords, and roles. The file is given in the auth_realm_properties option~~
