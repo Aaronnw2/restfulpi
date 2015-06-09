@@ -32,9 +32,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
 		log.info("Get pins request from " + incomingRequest.getRemoteHost());
-		HTTPResponse gpioResponse = controller.getPins();
-		if(gpioResponse.isSuccess()) return Response.ok(controller.getPins()).build();
-		else return Response.serverError().entity(gpioResponse).build();
+		return buildResponse(controller.getPins());
 	}
 	
 	@GET
@@ -42,11 +40,9 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPin(@Context HttpServletRequest incomingRequest, @PathParam("pin") int pinNumber) {
 		log.info("Get Output pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		HTTPResponse gpioResponse = controller.getPin(pinNumber);
-		if(gpioResponse.isSuccess()) return Response.ok(gpioResponse).build();
-		else return Response.serverError().entity(gpioResponse).build();
+		return buildResponse(controller.getPin(pinNumber));
 	}
-	
+
 	@POST
 	@Path("/{pin}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -72,9 +68,7 @@ public class RestEndpoint {
 	public Response setPinHigh(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
 		log.info("Provision pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		HTTPResponse gpioResponse = controller.setPinHigh(pinNumber);
-		if(gpioResponse.isSuccess()) return Response.ok(gpioResponse).build();
-		else return Response.serverError().entity(gpioResponse).build();
+		return buildResponse(controller.setPinHigh(pinNumber));
 	}
 	
 	@PUT
@@ -83,7 +77,10 @@ public class RestEndpoint {
 	public Response setPinLow(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
 		log.info("Provision pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		HTTPResponse gpioResponse = controller.setPinLow(pinNumber);
+		return buildResponse(controller.setPinLow(pinNumber));
+	}
+
+	private Response buildResponse(HTTPResponse gpioResponse) {
 		if(gpioResponse.isSuccess()) return Response.ok(gpioResponse).build();
 		else return Response.serverError().entity(gpioResponse).build();
 	}
