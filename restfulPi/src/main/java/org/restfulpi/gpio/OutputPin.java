@@ -46,17 +46,26 @@ public class OutputPin implements GPIOPin{
 	}
 
 	public GetPinResponse processHigh() {
-		// TODO Auto-generated method stub
-		return null;
+		if(provisionedPin.isHigh()) return new GetPinResponse(getPinResponseInformation(),
+				true, "Pin is already high");
+		else {
+			provisionedPin.high();
+			return new GetPinResponse(getPinResponseInformation(),
+					true, "Pin set to high");
+		}
 	}
 
 	public GetPinResponse processLow() {
-		// TODO Auto-generated method stub
-		return null;
+		if(provisionedPin.isLow()) return new GetPinResponse(getPinResponseInformation(),
+				true, "Pin is already low");
+		else {
+			provisionedPin.low();
+			return new GetPinResponse(getPinResponseInformation(),
+					true, "Pin set to low");
+		}
 	}
 
 	public GetPinResponse processStatus() {
-		// TODO Auto-generated method stub
-		return null;
+		return new GetPinResponse(getPinResponseInformation(), true, "Request Complete");
 	}
 }

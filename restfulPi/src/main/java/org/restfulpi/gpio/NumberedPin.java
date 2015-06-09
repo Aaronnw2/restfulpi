@@ -55,7 +55,7 @@ public enum NumberedPin {
 		return this.gpioPinNumber;
 	}
 	
-	public NumberedPin getNumberedPinFromRaspiPin(RaspiPin inPin) {
+	public static NumberedPin getNumberedPinFromRaspiPin(RaspiPin inPin) {
 		for(NumberedPin pin: NumberedPin.values()) {
 			if(pin.getPin().equals(inPin)) return pin;
 		}

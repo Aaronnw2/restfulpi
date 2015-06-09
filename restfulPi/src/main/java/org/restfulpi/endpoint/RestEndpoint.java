@@ -20,9 +20,7 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.restfulpi.gpio.GPIORequestHandler;
-import org.restfulpi.gpio.ProvisionPinRequest;
-import org.restfulpi.response.GetPinResponse;
-import org.restfulpi.response.GetPinsResponse;
+import org.restfulpi.response.HTTPResponse;
 
 @Path("/")
 public class RestEndpoint {
@@ -34,7 +32,9 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
 		log.info("Get pins request from " + incomingRequest.getRemoteHost());
-		return Response.ok(controller.getPins()).build();
+		HTTPResponse gpioResponse = controller.getPins();
+		if(gpioResponse.isSuccess()) return Response.ok(controller.getPins()).build();
+		else return Response.serverError().entity(gpioResponse).build();
 	}
 	
 	@GET
@@ -42,7 +42,9 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPin(@Context HttpServletRequest incomingRequest, @PathParam("pin") int pinNumber) {
 		log.info("Get Output pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		return Response.ok(controller.getPin(pinNumber)).build();
+		HTTPResponse gpioResponse = controller.getPin(pinNumber);
+		if(gpioResponse.isSuccess()) return Response.ok(gpioResponse).build();
+		else return Response.serverError().entity(gpioResponse).build();
 	}
 	
 	@POST
@@ -51,12 +53,16 @@ public class RestEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response provisionNewPin(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber, ProvisionPinRequest provisionRequest) {
-		log.info("Provision pin request for " + pinNumber + " as \"stand in\"" + " from " + incomingRequest.getRemoteHost());
+		log.info("Provision pin request for " + pinNumber + " as \"" + provisionRequest.getName() + "\" from " + incomingRequest.getRemoteHost());
 		try {
-			return Response.created(new URI("/pins/" + pinNumber)).entity(
-					controller.provisionPin(pinNumber, provisionRequest.getName(), provisionRequest.getInitialState())).build();
+			HTTPResponse gpioResponse = controller.provisionPin(pinNumber, provisionRequest.getName(),
+					provisionRequest.getInitialState());
+			if(gpioResponse.isSuccess()) return Response.created(new URI("/pins/" + pinNumber))
+				.entity(gpioResponse).build();
+			else return Response.serverError().entity(gpioResponse).build();
 		} catch (URISyntaxException e) {
-			return Response.serverError().build();
+			log.error("Bad URI created for new pin " + provisionRequest.getName() + " for pin number " + pinNumber);
+			return Response.serverError().entity("Invalid URI request").build();
 		}
 	}
 	
@@ -66,7 +72,9 @@ public class RestEndpoint {
 	public Response setPinHigh(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
 		log.info("Provision pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		return Response.ok(controller.setPinHigh(pinNumber)).build();
+		HTTPResponse gpioResponse = controller.setPinHigh(pinNumber);
+		if(gpioResponse.isSuccess()) return Response.ok(gpioResponse).build();
+		else return Response.serverError().entity(gpioResponse).build();
 	}
 	
 	@PUT
@@ -75,6 +83,8 @@ public class RestEndpoint {
 	public Response setPinLow(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
 		log.info("Provision pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
-		return Response.ok(controller.setPinLow(pinNumber)).build();
+		HTTPResponse gpioResponse = controller.setPinLow(pinNumber);
+		if(gpioResponse.isSuccess()) return Response.ok(gpioResponse).build();
+		else return Response.serverError().entity(gpioResponse).build();
 	}
 }

@@ -1,4 +1,4 @@
-package org.restfulpi.gpio;
+package org.restfulpi.endpoint;
 
 
 public class ProvisionPinRequest {

@@ -1,5 +1,7 @@
 package org.restfulpi.gpio;
 
+import static com.pi4j.io.gpio.PinState.HIGH;
+import static com.pi4j.io.gpio.PinState.LOW;
 import static org.restfulpi.PropertiesReader.OUTPUT_PINS_PROPERTY_NAME;
 import static org.restfulpi.gpio.NumberedPin.getNumberedPinFromNumber;
 
@@ -22,7 +24,7 @@ public class GPIORequestHandler {
 	private final static Logger log = LogManager.getLogger();
 	private static final PropertiesReader props = PropertiesReader.getInstance();
 	
-	//private static final GpioController controller = GpioFactory.getInstance();
+	private static final GpioController controller = GpioFactory.getInstance();
 	ArrayList<GPIOPin> pins;
 	private static GPIORequestHandler HANDLER;
 	
@@ -41,21 +43,16 @@ public class GPIORequestHandler {
 		}
 	}
 
-	private ArrayList<GPIOPin> getGPIOOutputPinFromStrings(String[] numberStrings) {
-		ArrayList<GPIOPin> retList = new ArrayList<GPIOPin>();
-		if(numberStrings[0].equals("")) return new ArrayList<GPIOPin>();
-		//TODO: use <PinNumber>:<PinName>, for properties file
-		for(String currentPinString: numberStrings) {
-			NumberedPin currentNumberedPin = getNumberedPinFromNumber(Integer.parseInt(currentPinString));
-			retList.add(new OutputPin(currentNumberedPin, "Dummy_name", null));
-		}
-		return retList;
-	}
-
 	public HTTPResponse provisionPin(int pinNumber, String inName, String inInitialState) {
+		log.info("In gpio controller");
 		NumberedPin inPin = getNumberedPinFromNumber(pinNumber);
+		log.info("Nubmered pin found");
 		try {
-			OutputPin newPin= new OutputPin(inPin, inName, null);
+			OutputPin newPin = new OutputPin(inPin, inName,
+					controller.provisionDigitalOutputPin(inPin.getPin(), inName,
+							getStateFromString(inInitialState)));
+			log.info("Pin provisioned");//TODO: remove all debug comments
+			pins.add(newPin);
 			return new GetPinResponse(newPin.getPinResponseInformation(), true, "Pin " + pinNumber + " provisioned as " + inName);
 		} catch(Exception e) {
 			log.error("Error provisioning pin " + pinNumber, e);
@@ -67,6 +64,39 @@ public class GPIORequestHandler {
 		return new GetPinsResponse(buildPinInformationList(), true, "Request Completed");
 	}
 
+	public HTTPResponse getPin(int pinNumber) {
+		if(isProvisionedPin(pinNumber)) {
+			GPIOPin pin = getPinByNumber(pinNumber);
+			return new GetPinResponse(pin.getPinResponseInformation(), true, "Request Completed");
+		}
+		else return new HTTPResponse(false, "Pin not provisioned");
+	}
+
+	public HTTPResponse setPinHigh(int pinNumber) {
+		if(isProvisionedPin(pinNumber)) {
+			GPIOPin pin = getPinByNumber(pinNumber);
+			pin.processHigh();
+			return new GetPinResponse(pin.getPinResponseInformation(), true, "Request Completed");
+		}
+		else return new HTTPResponse(false, "Pin not provisioned");
+	}
+
+	public HTTPResponse setPinLow(int pinNumber) {
+		if(isProvisionedPin(pinNumber)) {
+			GPIOPin pin = getPinByNumber(pinNumber);
+			pin.processLow();
+			return new GetPinResponse(pin.getPinResponseInformation(), true, "Request Completed");
+		}
+		else return new HTTPResponse(false, "Pin not provisioned");
+	}
+	
+	private boolean isProvisionedPin(int pinNumber) {
+		for(GPIOPin currentPin: pins) {
+			if(currentPin.getNumberedPin().getGPIOPinNumber() == pinNumber) return true;
+		}
+		return false;
+	}
+	
 	private ArrayList<PinInformation> buildPinInformationList() {
 		ArrayList<PinInformation> retList = new ArrayList<PinInformation>();
 		for(GPIOPin currentPin: pins) {
@@ -74,19 +104,34 @@ public class GPIORequestHandler {
 		}
 		return retList;
 	}
-
-	public HTTPResponse getPin(int pinNumber) {
-		// TODO Auto-generated method stub
-		return new HTTPResponse(true, "Request Completed");
+	
+	private ArrayList<GPIOPin> getGPIOOutputPinFromStrings(String[] numberStrings) {
+		ArrayList<GPIOPin> retList = new ArrayList<GPIOPin>();
+		if(numberStrings[0].equals("")) return new ArrayList<GPIOPin>();
+		//TODO: use <PinNumber>:<PinName>, for properties file
+		for(String currentPinString: numberStrings) {
+			NumberedPin currentNumberedPin = getNumberedPinFromNumber(Integer.parseInt(currentPinString));
+			retList.add(new OutputPin(currentNumberedPin, "Dummy_name", null));
+		}
+		return retList;
 	}
+	
 
-	public HTTPResponse setPinHigh(int pinNumber) {
-		// TODO Auto-generated method stub
-		return new HTTPResponse(true, "Request Completed");
+	private PinState getStateFromString(String inInitialState) {
+		if(inInitialState.toLowerCase().equals("high")) return HIGH;
+		else if(inInitialState.toLowerCase().equals("low")) return LOW;
+		else {
+			log.error("Invalid pin state " + inInitialState + ". Setting pin state to low");
+			return LOW;
+		}
 	}
+	
 
-	public HTTPResponse setPinLow(int pinNumber) {
-		// TODO Auto-generated method stub
-		return new HTTPResponse(true, "Request Completed");
+	private GPIOPin getPinByNumber(int pinNumber) {
+		for(GPIOPin currentPin: pins) {
+			if(currentPin.getNumberedPin().getGPIOPinNumber() == pinNumber) return currentPin;
+		}
+		log.error("Could not find pin for pin number " + pinNumber + ". This pin should have been provisioned, but wasn't.");
+		return null;
 	}
 }
