@@ -44,15 +44,11 @@ public class GPIORequestHandler {
 	}
 
 	public HTTPResponse provisionPin(int pinNumber, String inName, String inInitialState) {
-		log.info("In gpio controller");
 		NumberedPin inPin = getNumberedPinFromNumber(pinNumber);
-		log.info("Nubmered pin found");
 		try {
 			OutputPin newPin = new OutputPin(inPin, inName,
 					controller.provisionDigitalOutputPin(inPin.getPin(), inName,
 							getStateFromString(inInitialState)));
-			//OutputPin newPin = new OutputPin(inPin, inName, null);
-			log.info("Pin provisioned");//TODO: remove all debug comments
 			pins.add(newPin);
 			return new GetPinResponse(newPin.getPinResponseInformation(), true, "Pin " + pinNumber + " provisioned as " + inName);
 		} catch(Exception e) {
@@ -109,10 +105,12 @@ public class GPIORequestHandler {
 	private ArrayList<GPIOPin> getGPIOOutputPinFromStrings(String[] numberStrings) {
 		ArrayList<GPIOPin> retList = new ArrayList<GPIOPin>();
 		if(numberStrings[0].equals("")) return new ArrayList<GPIOPin>();
-		//TODO: use <PinNumber>:<PinName>, for properties file
 		for(String currentPinString: numberStrings) {
-			NumberedPin currentNumberedPin = getNumberedPinFromNumber(Integer.parseInt(currentPinString));
-			retList.add(new OutputPin(currentNumberedPin, "Dummy_name", null));
+			int pinNumber = Integer.parseInt(currentPinString.split(":")[0]);
+			String pinName = currentPinString.split(":")[1];
+			NumberedPin currentNumberedPin = getNumberedPinFromNumber(pinNumber);
+			retList.add(new OutputPin(currentNumberedPin, pinName, controller.provisionDigitalOutputPin(currentNumberedPin.getPin(),
+					pinName, LOW)));
 		}
 		return retList;
 	}

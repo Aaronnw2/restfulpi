@@ -1,16 +1,26 @@
 package org.restfulpi;
 
+import static org.restfulpi.PropertiesReader.AUTH_REALM_PROPERTIES_PROPERTY_NAME;
+import static org.restfulpi.PropertiesReader.BASIC_AUTH_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.CORS_HEADERS_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.DEFAULT_PORT_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.WEB_DIRECTORY_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.getInstance;
 
+import java.util.Collections;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.security.ConstraintMapping;
+import org.eclipse.jetty.security.ConstraintSecurityHandler;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.security.authentication.BasicAuthenticator;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.util.security.Constraint;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.restfulpi.gpio.GPIORequestHandler;
 
@@ -36,8 +46,10 @@ public class InitializationController {
 		
 		try {
 			jettyServer = new Server(Integer.parseInt(props.getProperty(DEFAULT_PORT_PROPERTY_NAME)));
-			jettyServer.setHandler(context);
 
+			if(props.getProperty(BASIC_AUTH_PROPERTY_NAME).equals(true)) startServerWithAuth(jettyServer, context);
+			else jettyServer.setHandler(context);
+	        
 			ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, API_CONTEXT_PATH);
 			jerseyServlet.setInitOrder(0);
 			if(props.getProperty(CORS_HEADERS_PROPERTY_NAME).equals(true)) jerseyServlet.setInitParameter(CORS_FILTER_PROPERTY, CORS_FILTER_VALUE);
@@ -46,7 +58,7 @@ public class InitializationController {
 
 			context.addServlet(DefaultServlet.class, WEB_CONTEXT_PATH);
 			context.setResourceBase(props.getProperty(WEB_DIRECTORY_PROPERTY_NAME));
-
+			
 			GPIORequestHandler.getInstance();
 			
 			jettyServer.start();
@@ -56,6 +68,31 @@ public class InitializationController {
 		} finally {
 			jettyServer.destroy();
 		}
+	}
+
+	private static void startServerWithAuth(Server jettyServer, ServletContextHandler context) {
+		String authPropertiesPathAndFile = props.getProperty(AUTH_REALM_PROPERTIES_PROPERTY_NAME);
+		if(authPropertiesPathAndFile.equals("")) {
+			log.error("The property auth_realm_properties must be set to use authentication");
+			jettyServer.setHandler(context);
+			return;
+		}
+		LoginService loginService = new HashLoginService("JettyRealm", authPropertiesPathAndFile);
+		jettyServer.addBean(loginService);
+		ConstraintSecurityHandler security = new ConstraintSecurityHandler();
+		jettyServer.setHandler(security);
+		Constraint constraint = new Constraint();
+        constraint.setName("auth");
+        constraint.setAuthenticate(true);
+        constraint.setRoles(new String[] { "apiuser" });
+        ConstraintMapping mapping = new ConstraintMapping();
+        mapping.setPathSpec("/*");
+        mapping.setConstraint(constraint);
+        security.setConstraintMappings(Collections.singletonList(mapping));
+        security.setAuthenticator(new BasicAuthenticator());
+        security.setLoginService(loginService);
+        
+        security.setHandler(context);
 	}
 
 }

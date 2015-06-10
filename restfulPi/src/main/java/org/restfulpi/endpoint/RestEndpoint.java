@@ -47,10 +47,7 @@ public class RestEndpoint {
 	public Response provisionNewPin(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber, ProvisionPinRequest provisionRequest) {
 		log.info("Provision pin request for " + pinNumber + " as \"" + provisionRequest.getName() + "\" from " + incomingRequest.getRemoteHost());
-			HTTPResponse gpioResponse = controller.provisionPin(pinNumber, provisionRequest.getName(),
-					provisionRequest.getInitialState());
-			if(gpioResponse.isSuccess()) return Response.ok(gpioResponse).build();
-			else return Response.serverError().entity(gpioResponse).build();
+		return buildResponse(controller.provisionPin(pinNumber, provisionRequest.getName(), provisionRequest.getInitialState()));
 	}
 	
 	@PUT

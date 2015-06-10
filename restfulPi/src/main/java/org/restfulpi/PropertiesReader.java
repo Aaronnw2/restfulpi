@@ -19,11 +19,13 @@ public class PropertiesReader {
 	public static final String OUTPUT_PINS_PROPERTY_NAME = "output_pins";
 	public static final String DEFAULT_PORT = "8080";
 	public static final String DEFAULT_PORT_PROPERTY_NAME = "port";
+	public static final String AUTH_REALM_PROPERTIES_PROPERTY_NAME = "auth_realm_properties";
 	
 	private static final String EMPTY_STRING = "";
 	private static final String FALSE_STRING = "false";
 	private static final String REST_PROPERTIES_SYSTEM_OPTION = "restProperties";
 	private static final String DEFAULT_FILE_LOCATION = "/home/pi/rest.properties";
+	
 	private Properties properties;
 
 	private static PropertiesReader PROPERTIES_READER;
@@ -60,7 +62,7 @@ public class PropertiesReader {
 		properties.put(BASIC_AUTH_PROPERTY_NAME, FALSE_STRING);
 	}
 
-	public String getProperty(String key) throws Exception {
+	public String getProperty(String key) {
 		String value = properties.getProperty(key);
 		if(value != null) return value;
 		log.error("A value for \"" + key + "\" was not found");
