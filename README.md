@@ -35,4 +35,4 @@ You can change defaults and set up advanced features using a properties file. Re
 * CORS_headers: include CORS headers for cross site requests
 * web_directory: RestfulPi will serve static web content from the specified folder
 * ~~ssl_on: turn on ssl. This requires the keystore and keystore_password properties be set~~
-* ~~basic_auth_on: turn on basic HTTP authentication using Jettys HashLoginService. This requires an additional properties file to specify users, passwords, and roles. The file is given in the auth_realm_properties option~~
+* basic_auth_on: turn on basic HTTP authentication using Jettys HashLoginService. This requires an additional properties file to specify users, passwords, and roles. The file is given in the auth_realm_properties option. The users in the realm properties must have the role "apiuser"
