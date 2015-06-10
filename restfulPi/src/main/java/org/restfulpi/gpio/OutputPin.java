@@ -14,7 +14,7 @@ public class OutputPin implements GPIOPin{
 	public OutputPin(NumberedPin inNumberedPin, String inName, GpioPinDigitalOutput inProvisionedPin) {
 		numberedPin = inNumberedPin;
 		pinName = inName;
-		
+		provisionedPin = inProvisionedPin;
 	}
 	
 	public NumberedPin getNumberedPin() {

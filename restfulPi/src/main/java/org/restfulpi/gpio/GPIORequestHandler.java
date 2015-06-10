@@ -51,6 +51,7 @@ public class GPIORequestHandler {
 			OutputPin newPin = new OutputPin(inPin, inName,
 					controller.provisionDigitalOutputPin(inPin.getPin(), inName,
 							getStateFromString(inInitialState)));
+			//OutputPin newPin = new OutputPin(inPin, inName, null);
 			log.info("Pin provisioned");//TODO: remove all debug comments
 			pins.add(newPin);
 			return new GetPinResponse(newPin.getPinResponseInformation(), true, "Pin " + pinNumber + " provisioned as " + inName);
