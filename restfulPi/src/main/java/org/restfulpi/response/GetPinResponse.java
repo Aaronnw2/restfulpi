@@ -8,6 +8,8 @@ public class GetPinResponse extends HTTPResponse{
 		super(inSuccess, inMessage);
 		pin = inPinInfo;
 	}
+	
+	public GetPinResponse() {}
 
 	public PinInformation getPin() {
 		return pin;
