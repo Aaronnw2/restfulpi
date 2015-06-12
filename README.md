@@ -29,7 +29,7 @@ Download the latest release, copy to your Pi, and run with "sudo java -jar restf
     PUT http://\<pi address\>:8080/pins/\<pin number\>/low
     
 ##Advanced configuration
-You can change defaults and set up advanced features using a properties file. RestfulPi will automatically check the for file /home/pi/rest.properties and use the settings in it. You can specify a different file by adding the java option -Drestproperties="\<file path and name\>". RestfulPi has the following options:
+You can change defaults and set up advanced features using a properties file. RestfulPi will automatically check the for file /home/pi/rest.properties and use the settings in it. You can specify a different file by adding the java option -DrestProperties="\<file path and name\>". RestfulPi has the following options:
 * port: Change the port that RestfulPi will run on
 * output_pins: pins to automatically provision on start up. Pins are comma seperated and in the format \<pin number\>:\<pin name\>
 * CORS_headers: include CORS headers for cross site requests
