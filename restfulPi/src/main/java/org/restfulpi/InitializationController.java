@@ -7,6 +7,7 @@ import static org.restfulpi.PropertiesReader.BASIC_AUTH_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.CORS_HEADERS_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.DEFAULT_PORT_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.WEB_DIRECTORY_PROPERTY_NAME;
+import static org.restfulpi.PropertiesReader.fileExists;
 import static org.restfulpi.PropertiesReader.getInstance;
 
 import java.util.Collections;
@@ -75,8 +76,7 @@ public class InitializationController {
 
 	private static void startServerWithAuth(Server jettyServer, ServletContextHandler context) {
 		String authPropertiesPathAndFile = props.getProperty(AUTH_REALM_PROPERTIES_PROPERTY_NAME);
-		//TODO: check that file actually exists
-		if(authPropertiesPathAndFile.equals("")) {
+		if(!fileExists(authPropertiesPathAndFile)) {
 			log.error("The property auth_realm_properties must be set to use authentication");
 			jettyServer.setHandler(context);
 			return;
@@ -98,5 +98,4 @@ public class InitializationController {
         
         security.setHandler(context);
 	}
-
 }

@@ -95,7 +95,8 @@ public class PropertiesReader {
 		return true;
 	}
 
-	private boolean fileExists(String fileAndPath) {
+	public static boolean fileExists(String fileAndPath) {
+		if(fileAndPath.equals("")) return false;
 		File f = new File(fileAndPath);
 		if(f.exists() && !f.isDirectory()) return true;
 		log.debug(format("Properties file %s does not exist", fileAndPath));
