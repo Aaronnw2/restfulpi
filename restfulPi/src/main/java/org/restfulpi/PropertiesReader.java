@@ -1,5 +1,7 @@
 package org.restfulpi;
 
+import static java.lang.String.format;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -41,7 +43,7 @@ public class PropertiesReader {
 		properties = new Properties();
 		String javaOption = System.getProperty(REST_PROPERTIES_SYSTEM_OPTION);
 		if(isNotNullOrEmpty(javaOption) && fileExists(javaOption)) {
-			log.info("Loading initial configuration from " + javaOption);
+			log.info(format("Loading initial configuration from %1", javaOption));
 			loadProperties(javaOption);
 		} else if(fileExists(DEFAULT_FILE_LOCATION)) {
 			log.info("Loading initial configuration from " + DEFAULT_FILE_LOCATION);	

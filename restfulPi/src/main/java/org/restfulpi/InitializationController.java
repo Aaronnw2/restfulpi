@@ -40,7 +40,8 @@ public class InitializationController {
 	private static final String API_CONTEXT_PATH = "/pins/*";
 
 	public static void main(String[] args) {
-		
+		//TODO: move this to its own method, and add constructor to use as library
+		//TODO: SSL
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		Server jettyServer = null;
@@ -73,6 +74,7 @@ public class InitializationController {
 
 	private static void startServerWithAuth(Server jettyServer, ServletContextHandler context) {
 		String authPropertiesPathAndFile = props.getProperty(AUTH_REALM_PROPERTIES_PROPERTY_NAME);
+		//TODO: check that file actually exists
 		if(authPropertiesPathAndFile.equals("")) {
 			log.error("The property auth_realm_properties must be set to use authentication");
 			jettyServer.setHandler(context);
