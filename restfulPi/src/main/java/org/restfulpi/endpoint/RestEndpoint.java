@@ -1,5 +1,6 @@
 package org.restfulpi.endpoint;
 
+import static java.lang.String.format;
 import static org.restfulpi.gpio.GPIORequestHandler.getInstance;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +29,7 @@ public class RestEndpoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProvisionedOutputPins(@Context HttpServletRequest incomingRequest) {
-		log.info("Get pins request from " + incomingRequest.getRemoteHost());
+		log.info(format("Get pins request from %s", incomingRequest.getRemoteHost()));
 		return buildResponse(controller.getPins());
 	}
 	
@@ -36,7 +37,7 @@ public class RestEndpoint {
 	@Path("/{pin}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPin(@Context HttpServletRequest incomingRequest, @PathParam("pin") int pinNumber) {
-		log.info("Get Output pin request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
+		log.info(format("Get Output pin request for %d from %s", pinNumber, incomingRequest.getRemoteHost()));
 		return buildResponse(controller.getPin(pinNumber));
 	}
 
@@ -46,7 +47,8 @@ public class RestEndpoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response provisionNewPin(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber, ProvisionPinRequest provisionRequest) {
-		log.info("Provision pin request for " + pinNumber + " as \"" + provisionRequest.getName() + "\" from " + incomingRequest.getRemoteHost());
+		log.info(format("Provision pin request for %d as \"%s\" from %s", pinNumber, provisionRequest.getName(),
+				incomingRequest.getRemoteHost()));
 		return buildResponse(controller.provisionPin(pinNumber, provisionRequest.getName(), provisionRequest.getInitialState()));
 	}
 	
@@ -55,7 +57,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response setPinHigh(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
-		log.info("Set pin high request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
+		log.info(format("Set pin high request for %d from %s", pinNumber, incomingRequest.getRemoteHost()));
 		return buildResponse(controller.setPinHigh(pinNumber));
 	}
 	
@@ -64,7 +66,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response setPinLow(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
-		log.info("Set pin low request for " + pinNumber + " from " + incomingRequest.getRemoteHost());
+		log.info("Set pin low request for %d from %s",pinNumber, incomingRequest.getRemoteHost());
 		return buildResponse(controller.setPinLow(pinNumber));
 	}
 

@@ -1,6 +1,7 @@
 package org.restfulpi;
 
 import static java.lang.Boolean.parseBoolean;
+import static java.lang.String.format;
 import static org.restfulpi.PropertiesReader.AUTH_REALM_PROPERTIES_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.BASIC_AUTH_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.CORS_HEADERS_PROPERTY_NAME;
@@ -66,7 +67,7 @@ public class InitializationController {
 			jettyServer.start();
 			jettyServer.join();
 		} catch (Exception e) {
-			log.error("Error in server initialization: " + e.getMessage(), e);
+			log.error(format("Error in server initialization: %d", e.getMessage()), e);
 		} finally {
 			jettyServer.destroy();
 		}

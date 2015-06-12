@@ -2,6 +2,7 @@ package org.restfulpi.gpio;
 
 import static com.pi4j.io.gpio.PinState.HIGH;
 import static com.pi4j.io.gpio.PinState.LOW;
+import static java.lang.String.format;
 import static org.restfulpi.PropertiesReader.OUTPUT_PINS_PROPERTY_NAME;
 import static org.restfulpi.gpio.NumberedPin.getNumberedPinFromNumber;
 
@@ -50,10 +51,10 @@ public class GPIORequestHandler {
 					controller.provisionDigitalOutputPin(inPin.getPin(), inName,
 							getStateFromString(inInitialState)));
 			pins.add(newPin);
-			return new GetPinResponse(newPin.getPinResponseInformation(), true, "Pin " + pinNumber + " provisioned as " + inName);
+			return new GetPinResponse(newPin.getPinResponseInformation(), true, format("Pin %d provisioned as %s", pinNumber, inName));
 		} catch(Exception e) {
 			log.error("Error provisioning pin " + pinNumber, e);
-			return new HTTPResponse(false, "Error provisioning pin " + pinNumber + ":" + e.getMessage());
+			return new HTTPResponse(false, format("Error provisioning pin %d: %s", pinNumber, e.getMessage()));
 		}
 	}
 
@@ -113,7 +114,7 @@ public class GPIORequestHandler {
 				retList.add(new OutputPin(currentNumberedPin, pinName, controller.provisionDigitalOutputPin(currentNumberedPin.getPin(),
 					pinName, LOW)));
 			} catch (RuntimeException e) {
-				log.error("Error provisioning pin " + pinNumber + " as " + pinName + " " + e.getMessage());
+				log.error(format("Error provisioning pin %d as %s %s", pinNumber, pinName, e.getMessage()));
 			}
 		}
 		return retList;
@@ -124,7 +125,7 @@ public class GPIORequestHandler {
 		if(inInitialState.toLowerCase().equals("high")) return HIGH;
 		else if(inInitialState.toLowerCase().equals("low")) return LOW;
 		else {
-			log.error("Invalid pin state " + inInitialState + ". Setting pin state to low");
+			log.error(format("Invalid pin state %s. Setting pin state to low", inInitialState));
 			return LOW;
 		}
 	}
@@ -134,7 +135,7 @@ public class GPIORequestHandler {
 		for(GPIOPin currentPin: pins) {
 			if(currentPin.getNumberedPin().getGPIOPinNumber() == pinNumber) return currentPin;
 		}
-		log.error("Could not find pin for pin number " + pinNumber + ". This pin should have been provisioned, but wasn't.");
+		log.error(format("Could not find pin for pin number %d. This pin should have been provisioned, but wasn't.", pinNumber));
 		return null;
 	}
 }
