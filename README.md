@@ -2,7 +2,7 @@
 A general purpose REST API for controlling Raspberry Pi GPIO pins over HTTP
 
 ##Basic Usage
-Download the latest release, copy to your Pi, and run with "sudo java -jar restfulPi-/<version/>.jar". Using the API is roughly similar to locally using GPIO. A pin must be provisioned, and can then be used.
+Download the latest release, copy to your Pi, and run with "sudo java -jar restfulPi-\<version\>.jar". Using the API is roughly similar to locally using GPIO. A pin must be provisioned, and can then be used.
 
 ###With default options
 
