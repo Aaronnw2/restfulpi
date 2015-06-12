@@ -67,25 +67,25 @@ public class GPIORequestHandler {
 			GPIOPin pin = getPinByNumber(pinNumber);
 			return new GetPinResponse(pin.getPinResponseInformation(), true, "Request Completed");
 		}
-		else return new HTTPResponse(false, "Pin not provisioned");
+		else return new HTTPResponse(false, format("Pin %d not provisioned", pinNumber));
 	}
 
 	public HTTPResponse setPinHigh(int pinNumber) {
 		if(isProvisionedPin(pinNumber)) {
 			GPIOPin pin = getPinByNumber(pinNumber);
 			pin.processHigh();
-			return new GetPinResponse(pin.getPinResponseInformation(), true, "Request Completed");
+			return new GetPinResponse(pin.getPinResponseInformation(), true, format("Pin %d set to high", pinNumber));
 		}
-		else return new HTTPResponse(false, "Pin not provisioned");
+		else return new HTTPResponse(false, format("Pin &d not provisioned", pinNumber));
 	}
 
 	public HTTPResponse setPinLow(int pinNumber) {
 		if(isProvisionedPin(pinNumber)) {
 			GPIOPin pin = getPinByNumber(pinNumber);
 			pin.processLow();
-			return new GetPinResponse(pin.getPinResponseInformation(), true, "Request Completed");
+			return new GetPinResponse(pin.getPinResponseInformation(), true, format("Pin %d set to low", pinNumber));
 		}
-		else return new HTTPResponse(false, "Pin not provisioned");
+		else return new HTTPResponse(false, format("Pin %d not provisioned", pinNumber));
 	}
 	
 	private boolean isProvisionedPin(int pinNumber) {
