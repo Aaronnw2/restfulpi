@@ -107,6 +107,7 @@ public class InitializationController {
 
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSecureScheme("https");
+		config.setSecurePort(port);
 		HttpConfiguration sslConfiguration = new HttpConfiguration(config);
 		sslConfiguration.addCustomizer(new SecureRequestCustomizer());
 		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(sslConfiguration);
