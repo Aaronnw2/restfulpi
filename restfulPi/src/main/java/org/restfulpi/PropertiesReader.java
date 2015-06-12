@@ -46,7 +46,7 @@ public class PropertiesReader {
 			log.info(format("Loading initial configuration from %1", javaOption));
 			loadProperties(javaOption);
 		} else if(fileExists(DEFAULT_FILE_LOCATION)) {
-			log.info("Loading initial configuration from " + DEFAULT_FILE_LOCATION);	
+			log.info(format("Loading initial configuration from %1", DEFAULT_FILE_LOCATION));	
 			loadProperties(DEFAULT_FILE_LOCATION);
 		} else {
 			log.info("Java option for properties file not set, and no default file found. No initial configuration used");
@@ -67,7 +67,7 @@ public class PropertiesReader {
 	public String getProperty(String key) {
 		String value = properties.getProperty(key);
 		if(value != null) return value;
-		log.error("A value for \"" + key + "\" was not found");
+		log.error(format("A value for \"%1\" was not found", key));
 		return EMPTY_STRING;
 	}
 
@@ -83,9 +83,9 @@ public class PropertiesReader {
 			properties.load(in);
 			in.close();
 		} catch (FileNotFoundException e) {
-			log.error("Properties file " + propFileAndPath + " not found.", e);
+			log.error(format("Properties file %1 not found.", propFileAndPath), e);
 		} catch (IOException e) {
-			log.error("I/O exception for Properties file " + propFileAndPath, e);
+			log.error(format("I/O exception for Properties file %1", propFileAndPath), e);
 		}
 	}
 
@@ -98,7 +98,7 @@ public class PropertiesReader {
 	private boolean fileExists(String fileAndPath) {
 		File f = new File(fileAndPath);
 		if(f.exists() && !f.isDirectory()) return true;
-		log.debug("Properties file " + fileAndPath + " does not exist");
+		log.debug(format("Properties file %1 does not exist", fileAndPath));
 		return false;
 	}
 }
