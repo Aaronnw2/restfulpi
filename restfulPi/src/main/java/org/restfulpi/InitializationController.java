@@ -86,9 +86,19 @@ public class InitializationController {
 	}
 
 	private static void setSSLConnector(Server jettyServer) {
+		String keystorePathAndFile = props.getProperty(SSL_KEYSTORE_FILE_AND_PATH_PROPERTY);
+		String keystorePassword = props.getProperty(SSL_KEYSTORE_PASSWORD_PROPERTY);
+		if(keystorePathAndFile.equals("") || !fileExists(keystorePathAndFile)) {
+			log.error("To use SSL the keystore property must be set, and Keystore file must exist at that location");
+			return;
+		}
+		if(keystorePassword.equals("")) {
+			log.error("To use SSL the keystore_password property must be set");
+			return;
+		}
 		
 		SslContextFactory contextFactory = new SslContextFactory();
-		contextFactory.setKeyStorePath(props.getProperty(SSL_KEYSTORE_FILE_AND_PATH_PROPERTY));
+		contextFactory.setKeyStorePath(keystorePathAndFile);
 		contextFactory.setKeyStorePassword(props.getProperty(SSL_KEYSTORE_PASSWORD_PROPERTY));
 		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(contextFactory, org.eclipse.jetty.http.HttpVersion.HTTP_1_1.toString());
 
