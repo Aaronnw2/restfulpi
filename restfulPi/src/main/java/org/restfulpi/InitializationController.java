@@ -76,7 +76,6 @@ public class InitializationController {
 
 	private static void startServerWithAuth(Server jettyServer, ServletContextHandler context) {
 		String authPropertiesPathAndFile = props.getProperty(AUTH_REALM_PROPERTIES_PROPERTY_NAME);
-		log.info(AUTH_REALM_PROPERTIES_PROPERTY_NAME + ":" + authPropertiesPathAndFile);
 		if(!fileExists(authPropertiesPathAndFile)) {
 			log.error("The property auth_realm_properties must be set in order to use authentication");
 			jettyServer.setHandler(context);
