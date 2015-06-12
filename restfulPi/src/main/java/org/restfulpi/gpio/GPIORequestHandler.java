@@ -109,8 +109,12 @@ public class GPIORequestHandler {
 			int pinNumber = Integer.parseInt(currentPinString.split(":")[0]);
 			String pinName = currentPinString.split(":")[1];
 			NumberedPin currentNumberedPin = getNumberedPinFromNumber(pinNumber);
-			retList.add(new OutputPin(currentNumberedPin, pinName, controller.provisionDigitalOutputPin(currentNumberedPin.getPin(),
+			try {
+				retList.add(new OutputPin(currentNumberedPin, pinName, controller.provisionDigitalOutputPin(currentNumberedPin.getPin(),
 					pinName, LOW)));
+			} catch (RuntimeException e) {
+				log.error("Error provisioning pin " + pinNumber + " as " + pinName + " " + e.getMessage());
+			}
 		}
 		return retList;
 	}

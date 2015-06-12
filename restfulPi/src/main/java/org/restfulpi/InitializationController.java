@@ -1,5 +1,6 @@
 package org.restfulpi;
 
+import static java.lang.Boolean.parseBoolean;
 import static org.restfulpi.PropertiesReader.AUTH_REALM_PROPERTIES_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.BASIC_AUTH_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.CORS_HEADERS_PROPERTY_NAME;
@@ -47,12 +48,12 @@ public class InitializationController {
 		try {
 			jettyServer = new Server(Integer.parseInt(props.getProperty(DEFAULT_PORT_PROPERTY_NAME)));
 
-			if(props.getProperty(BASIC_AUTH_PROPERTY_NAME).equals(true)) startServerWithAuth(jettyServer, context);
+			if(parseBoolean(props.getProperty(BASIC_AUTH_PROPERTY_NAME))) startServerWithAuth(jettyServer, context);
 			else jettyServer.setHandler(context);
 	        
 			ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, API_CONTEXT_PATH);
 			jerseyServlet.setInitOrder(0);
-			if(props.getProperty(CORS_HEADERS_PROPERTY_NAME).equals(true)) jerseyServlet.setInitParameter(CORS_FILTER_PROPERTY, CORS_FILTER_VALUE);
+			if(parseBoolean(props.getProperty(CORS_HEADERS_PROPERTY_NAME))) jerseyServlet.setInitParameter(CORS_FILTER_PROPERTY, CORS_FILTER_VALUE);
 			jerseyServlet.setInitParameter(JERSEY_PROVIDER_PACKAGE_PROPERTY, ENDPOINTS_PACKAGE_VALUE);
 			jerseyServlet.setInitParameter(JSON_MAPPING_PROPERTY, JSON_MAPPING_VALUE);
 
