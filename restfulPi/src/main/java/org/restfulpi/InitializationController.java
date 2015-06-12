@@ -6,6 +6,9 @@ import static org.restfulpi.PropertiesReader.AUTH_REALM_PROPERTIES_PROPERTY_NAME
 import static org.restfulpi.PropertiesReader.BASIC_AUTH_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.CORS_HEADERS_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.DEFAULT_PORT_PROPERTY_NAME;
+import static org.restfulpi.PropertiesReader.SSL_KEYSTORE_FILE_AND_PATH_PROPERTY;
+import static org.restfulpi.PropertiesReader.SSL_KEYSTORE_PASSWORD_PROPERTY;
+import static org.restfulpi.PropertiesReader.SSL_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.WEB_DIRECTORY_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.fileExists;
 import static org.restfulpi.PropertiesReader.getInstance;
@@ -19,11 +22,17 @@ import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.security.Constraint;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.restfulpi.gpio.GPIORequestHandler;
 
@@ -43,17 +52,18 @@ public class InitializationController {
 
 	public static void main(String[] args) {
 		//TODO: move this to its own method, and add constructor to use as library
-		//TODO: SSL
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		Server jettyServer = null;
-		
+
 		try {
 			jettyServer = new Server(Integer.parseInt(props.getProperty(DEFAULT_PORT_PROPERTY_NAME)));
 
+			if(parseBoolean(props.getProperty(SSL_PROPERTY_NAME))) setSSLConnector(jettyServer);
+
 			if(parseBoolean(props.getProperty(BASIC_AUTH_PROPERTY_NAME))) startServerWithAuth(jettyServer, context);
 			else jettyServer.setHandler(context);
-	        
+
 			ServletHolder jerseyServlet = context.addServlet(ServletContainer.class, API_CONTEXT_PATH);
 			jerseyServlet.setInitOrder(0);
 			if(parseBoolean(props.getProperty(CORS_HEADERS_PROPERTY_NAME))) 
@@ -63,9 +73,9 @@ public class InitializationController {
 
 			context.addServlet(DefaultServlet.class, WEB_CONTEXT_PATH);
 			context.setResourceBase(props.getProperty(WEB_DIRECTORY_PROPERTY_NAME));
-			
+
 			GPIORequestHandler.getInstance();
-			
+
 			jettyServer.start();
 			jettyServer.join();
 		} catch (Exception e) {
@@ -73,6 +83,22 @@ public class InitializationController {
 		} finally {
 			jettyServer.destroy();
 		}
+	}
+
+	private static void setSSLConnector(Server jettyServer) {
+		
+		SslContextFactory contextFactory = new SslContextFactory();
+		contextFactory.setKeyStorePath(props.getProperty(SSL_KEYSTORE_FILE_AND_PATH_PROPERTY));
+		contextFactory.setKeyStorePassword(props.getProperty(SSL_KEYSTORE_PASSWORD_PROPERTY));
+		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(contextFactory, org.eclipse.jetty.http.HttpVersion.HTTP_1_1.toString());
+
+		HttpConfiguration config = new HttpConfiguration();
+		config.setSecureScheme("https");
+		HttpConfiguration sslConfiguration = new HttpConfiguration(config);
+		sslConfiguration.addCustomizer(new SecureRequestCustomizer());
+		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(sslConfiguration);
+		ServerConnector connector = new ServerConnector(jettyServer, sslConnectionFactory, httpConnectionFactory);
+		jettyServer.addConnector(connector);
 	}
 
 	private static void startServerWithAuth(Server jettyServer, ServletContextHandler context) {
@@ -88,16 +114,16 @@ public class InitializationController {
 		ConstraintSecurityHandler security = new ConstraintSecurityHandler();
 		jettyServer.setHandler(security);
 		Constraint constraint = new Constraint();
-        constraint.setName("auth");
-        constraint.setAuthenticate(true);
-        constraint.setRoles(new String[] { "apiuser" });
-        ConstraintMapping mapping = new ConstraintMapping();
-        mapping.setPathSpec("/*");
-        mapping.setConstraint(constraint);
-        security.setConstraintMappings(Collections.singletonList(mapping));
-        security.setAuthenticator(new BasicAuthenticator());
-        security.setLoginService(loginService);
-        
-        security.setHandler(context);
+		constraint.setName("auth");
+		constraint.setAuthenticate(true);
+		constraint.setRoles(new String[] { "apiuser" });
+		ConstraintMapping mapping = new ConstraintMapping();
+		mapping.setPathSpec("/*");
+		mapping.setConstraint(constraint);
+		security.setConstraintMappings(Collections.singletonList(mapping));
+		security.setAuthenticator(new BasicAuthenticator());
+		security.setLoginService(loginService);
+
+		security.setHandler(context);
 	}
 }

@@ -22,6 +22,8 @@ public class PropertiesReader {
 	public static final String DEFAULT_PORT = "8080";
 	public static final String DEFAULT_PORT_PROPERTY_NAME = "port";
 	public static final String AUTH_REALM_PROPERTIES_PROPERTY_NAME = "auth_realm_properties";
+	public static final String SSL_KEYSTORE_FILE_AND_PATH_PROPERTY = "keystore";
+	public static final String SSL_KEYSTORE_PASSWORD_PROPERTY = "keystore_password";
 	
 	private static final String EMPTY_STRING = "";
 	private static final String FALSE_STRING = "false";
