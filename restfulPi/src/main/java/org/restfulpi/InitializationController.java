@@ -2,7 +2,6 @@ package org.restfulpi;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.String.format;
-import static org.eclipse.jetty.http.HttpVersion.HTTP_1_1;
 import static org.restfulpi.PropertiesReader.AUTH_REALM_PROPERTIES_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.BASIC_AUTH_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.CORS_HEADERS_PROPERTY_NAME;
@@ -18,11 +17,13 @@ import java.util.Collections;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.eclipse.jetty.http.HttpVersion;
 import org.eclipse.jetty.security.ConstraintMapping;
 import org.eclipse.jetty.security.ConstraintSecurityHandler;
 import org.eclipse.jetty.security.HashLoginService;
 import org.eclipse.jetty.security.LoginService;
 import org.eclipse.jetty.security.authentication.BasicAuthenticator;
+import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
@@ -61,7 +62,9 @@ public class InitializationController {
 			int port = Integer.parseInt(props.getProperty(DEFAULT_PORT_PROPERTY_NAME));
 			jettyServer = new Server();
 
-			if(parseBoolean(props.getProperty(SSL_PROPERTY_NAME))) setSSLConnector(jettyServer, port);
+			if(parseBoolean(props.getProperty(SSL_PROPERTY_NAME))) {
+				jettyServer = setSSLConnector(port);
+			}
 			else jettyServer = new Server(port);
 			
 			if(parseBoolean(props.getProperty(BASIC_AUTH_PROPERTY_NAME))) startServerWithAuth(jettyServer, context);
@@ -88,32 +91,34 @@ public class InitializationController {
 		}
 	}
 
-	private static void setSSLConnector(Server jettyServer, int port) {
+	private static Server setSSLConnector(int port) {
 		String keystorePathAndFile = props.getProperty(SSL_KEYSTORE_FILE_AND_PATH_PROPERTY);
 		String keystorePassword = props.getProperty(SSL_KEYSTORE_PASSWORD_PROPERTY);
 		if(keystorePathAndFile.equals("") || !fileExists(keystorePathAndFile)) {
 			log.error("To use SSL the keystore property must be set, and Keystore file must exist at that location");
-			return;
+			return new Server(port);
 		}
 		if(keystorePassword.equals("")) {
 			log.error("To use SSL the keystore_password property must be set");
-			return;
+			return new Server(port);
 		}
 		
-		SslContextFactory contextFactory = new SslContextFactory();
-		contextFactory.setKeyStorePath(keystorePathAndFile);
-		contextFactory.setKeyStorePassword(props.getProperty(SSL_KEYSTORE_PASSWORD_PROPERTY));
-		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(contextFactory, HTTP_1_1.toString());
+		Server jettyServer = new Server();
+		SslContextFactory sslContextFactory = new SslContextFactory();
+        sslContextFactory.setKeyStorePath(keystorePathAndFile);
+        sslContextFactory.setKeyStorePassword(keystorePassword);
+        sslContextFactory.setKeyManagerPassword(keystorePassword);
+ 
+        HttpConfiguration https_config = new HttpConfiguration();
+        https_config.addCustomizer(new SecureRequestCustomizer());
 
-		HttpConfiguration config = new HttpConfiguration();
-		config.setSecureScheme("https");
-		config.setSecurePort(port);
-		HttpConfiguration sslConfiguration = new HttpConfiguration(config);
-		sslConfiguration.addCustomizer(new SecureRequestCustomizer());
-		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(sslConfiguration);
-		ServerConnector connector = new ServerConnector(jettyServer, sslConnectionFactory, httpConnectionFactory);
-		connector.setPort(port);
-		jettyServer.addConnector(connector);
+        ServerConnector https = new ServerConnector(jettyServer,
+            new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.asString()),
+                new HttpConnectionFactory(https_config));
+        https.setPort(port);
+        https.setIdleTimeout(500000);
+        jettyServer.setConnectors(new Connector[] { https });
+        return jettyServer;
 	}
 
 	private static void startServerWithAuth(Server jettyServer, ServletContextHandler context) {
