@@ -2,6 +2,7 @@ package org.restfulpi;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.String.format;
+import static org.eclipse.jetty.http.HttpVersion.HTTP_1_1;
 import static org.restfulpi.PropertiesReader.AUTH_REALM_PROPERTIES_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.BASIC_AUTH_PROPERTY_NAME;
 import static org.restfulpi.PropertiesReader.CORS_HEADERS_PROPERTY_NAME;
@@ -57,10 +58,12 @@ public class InitializationController {
 		Server jettyServer = null;
 
 		try {
-			jettyServer = new Server(Integer.parseInt(props.getProperty(DEFAULT_PORT_PROPERTY_NAME)));
+			int port = Integer.parseInt(props.getProperty(DEFAULT_PORT_PROPERTY_NAME));
+			jettyServer = new Server();
 
-			if(parseBoolean(props.getProperty(SSL_PROPERTY_NAME))) setSSLConnector(jettyServer);
-
+			if(parseBoolean(props.getProperty(SSL_PROPERTY_NAME))) setSSLConnector(jettyServer, port);
+			else jettyServer = new Server(port);
+			
 			if(parseBoolean(props.getProperty(BASIC_AUTH_PROPERTY_NAME))) startServerWithAuth(jettyServer, context);
 			else jettyServer.setHandler(context);
 
@@ -85,7 +88,7 @@ public class InitializationController {
 		}
 	}
 
-	private static void setSSLConnector(Server jettyServer) {
+	private static void setSSLConnector(Server jettyServer, int port) {
 		String keystorePathAndFile = props.getProperty(SSL_KEYSTORE_FILE_AND_PATH_PROPERTY);
 		String keystorePassword = props.getProperty(SSL_KEYSTORE_PASSWORD_PROPERTY);
 		if(keystorePathAndFile.equals("") || !fileExists(keystorePathAndFile)) {
@@ -100,7 +103,7 @@ public class InitializationController {
 		SslContextFactory contextFactory = new SslContextFactory();
 		contextFactory.setKeyStorePath(keystorePathAndFile);
 		contextFactory.setKeyStorePassword(props.getProperty(SSL_KEYSTORE_PASSWORD_PROPERTY));
-		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(contextFactory, org.eclipse.jetty.http.HttpVersion.HTTP_1_1.toString());
+		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(contextFactory, HTTP_1_1.toString());
 
 		HttpConfiguration config = new HttpConfiguration();
 		config.setSecureScheme("https");
@@ -108,6 +111,7 @@ public class InitializationController {
 		sslConfiguration.addCustomizer(new SecureRequestCustomizer());
 		HttpConnectionFactory httpConnectionFactory = new HttpConnectionFactory(sslConfiguration);
 		ServerConnector connector = new ServerConnector(jettyServer, sslConnectionFactory, httpConnectionFactory);
+		connector.setPort(port);
 		jettyServer.addConnector(connector);
 	}
 
