@@ -34,7 +34,7 @@ public class InitializationController {
 
 	private static final String ENDPOINTS_PACKAGE_VALUE = "org.restfulpi.endpoint";
 	private static final String JERSEY_PROVIDER_PACKAGE_PROPERTY = "jersey.config.server.provider.packages";
-	private static final String CORS_FILTER_PROPERTY = "com.sun.jersey.spi.container.ContainerResponseFilters";
+	private static final String CORS_FILTER_PROPERTY = "javax.ws.rs.container.ContainerResponseFilters";
 	private static final String CORS_FILTER_VALUE = "org.restfulpi.endpoint.CORSResponseFilter";
 	private static final String JSON_MAPPING_PROPERTY = "com.sun.jersey.api.json.POJOMappingFeature";
 	private static final String JSON_MAPPING_VALUE = "true";
