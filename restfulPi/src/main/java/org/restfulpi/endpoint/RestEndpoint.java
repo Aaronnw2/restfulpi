@@ -66,7 +66,7 @@ public class RestEndpoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response setPinLow(@Context HttpServletRequest incomingRequest,
 			@PathParam("pin") int pinNumber) {
-		log.info("Set pin low request for %d from %s",pinNumber, incomingRequest.getRemoteHost());
+		log.info(format("Set pin low request for %d from %s",pinNumber, incomingRequest.getRemoteHost()));
 		return buildResponse(controller.setPinLow(pinNumber));
 	}
 
