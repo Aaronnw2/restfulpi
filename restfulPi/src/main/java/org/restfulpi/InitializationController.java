@@ -60,13 +60,10 @@ public class InitializationController {
 
 		try {
 			int port = Integer.parseInt(props.getProperty(DEFAULT_PORT_PROPERTY_NAME));
-			jettyServer = new Server();
 
-			if(parseBoolean(props.getProperty(SSL_PROPERTY_NAME))) {
-				jettyServer = setSSLConnector(port);
-			}
+			if(parseBoolean(props.getProperty(SSL_PROPERTY_NAME))) {jettyServer = setSSLConnector(port);}
 			else jettyServer = new Server(port);
-			
+
 			if(parseBoolean(props.getProperty(BASIC_AUTH_PROPERTY_NAME))) startServerWithAuth(jettyServer, context);
 			else jettyServer.setHandler(context);
 
@@ -102,23 +99,27 @@ public class InitializationController {
 			log.error("To use SSL the keystore_password property must be set");
 			return new Server(port);
 		}
-		
-		Server jettyServer = new Server();
-		SslContextFactory sslContextFactory = new SslContextFactory();
-        sslContextFactory.setKeyStorePath(keystorePathAndFile);
-        sslContextFactory.setKeyStorePassword(keystorePassword);
-        sslContextFactory.setKeyManagerPassword(keystorePassword);
- 
-        HttpConfiguration https_config = new HttpConfiguration();
-        https_config.addCustomizer(new SecureRequestCustomizer());
 
-        ServerConnector https = new ServerConnector(jettyServer,
-            new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.asString()),
-                new HttpConnectionFactory(https_config));
-        https.setPort(port);
-        https.setIdleTimeout(500000);
-        jettyServer.setConnectors(new Connector[] { https });
-        return jettyServer;
+		Server server = new Server();
+		HttpConfiguration http_config = new HttpConfiguration();
+		http_config.setSecureScheme("https");
+		http_config.setSecurePort(port);
+		http_config.setOutputBufferSize(32768);
+
+		SslContextFactory sslContextFactory = new SslContextFactory();
+		sslContextFactory.setKeyStorePath(keystorePathAndFile);
+		sslContextFactory.setKeyStorePassword(keystorePassword);
+		sslContextFactory.setKeyManagerPassword(keystorePassword);
+
+		HttpConfiguration https_config = new HttpConfiguration(http_config);
+		https_config.addCustomizer(new SecureRequestCustomizer());
+		ServerConnector https = new ServerConnector(server,
+				new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.asString()),
+				new HttpConnectionFactory(https_config));
+		https.setPort(8443);
+		https.setIdleTimeout(500000);
+		server.setConnectors(new Connector[] { https });
+		return server;
 	}
 
 	private static void startServerWithAuth(Server jettyServer, ServletContextHandler context) {
