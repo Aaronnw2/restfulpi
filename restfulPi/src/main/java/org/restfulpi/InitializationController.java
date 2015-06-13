@@ -116,7 +116,7 @@ public class InitializationController {
 		ServerConnector https = new ServerConnector(server,
 				new SslConnectionFactory(sslContextFactory,HttpVersion.HTTP_1_1.asString()),
 				new HttpConnectionFactory(https_config));
-		https.setPort(8443);
+		https.setPort(port);
 		https.setIdleTimeout(500000);
 		server.setConnectors(new Connector[] { https });
 		return server;
