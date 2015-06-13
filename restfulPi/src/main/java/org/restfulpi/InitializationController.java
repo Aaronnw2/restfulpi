@@ -103,7 +103,7 @@ public class InitializationController {
 		Server server = new Server();
 		HttpConfiguration http_config = new HttpConfiguration();
 		http_config.setSecureScheme("https");
-		http_config.setSecurePort(443);
+		http_config.setSecurePort(port);
 		http_config.setOutputBufferSize(32768);
 
 		SslContextFactory sslContextFactory = new SslContextFactory();
