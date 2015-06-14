@@ -46,7 +46,6 @@ public class GPIORequestHandler {
 
 	public HTTPResponse provisionPin(int pinNumber, String inName, String inInitialState) {
 		NumberedPin inPin = getNumberedPinFromNumber(pinNumber);
-		if(isProvisionedPin(pinNumber)) { return new HTTPResponse(false, format("Pin %d is already provisioned", pinNumber)); }
 		try {
 			OutputPin newPin = new OutputPin(inPin, inName,
 					controller.provisionDigitalOutputPin(inPin.getPin(), inName,
