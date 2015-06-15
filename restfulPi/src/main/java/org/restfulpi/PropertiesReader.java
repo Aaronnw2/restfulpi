@@ -90,6 +90,10 @@ public class PropertiesReader {
 			log.error(format("I/O exception for Properties file %s", propFileAndPath), e);
 		}
 	}
+	
+	public void setProperties(Properties inProperties) {
+		properties = inProperties;
+	}
 
 	private boolean isNotNullOrEmpty(String property) {
 		if(property == null) return false;
