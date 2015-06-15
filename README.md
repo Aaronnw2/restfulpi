@@ -30,9 +30,9 @@ Download the latest release, copy to your Pi, and run with "sudo java -jar restf
     
 ##Advanced configuration
 You can change defaults and set up advanced features using a properties file. RestfulPi will automatically check the for file /home/pi/rest.properties and use the settings in it. You can specify a different file by adding the java option -DrestProperties="\<file path and name\>". RestfulPi has the following options:
-* port: Change the port that RestfulPi will run on    e.g. port=80
-* output_pins: pins to automatically provision on start up. Pins are comma seperated and in the format \<pin number\>:\<pin name\>  e.g. output_pins=4:pin4,5:pin5
-* CORS_headers: include CORS headers for cross site requests  e.g. CORS_headers:true
-* web_directory: RestfulPi will serve static web content from the specified folder  e.g. web_directory=/home/pi/restfulpi/web
-* ssl_on: turn on ssl. This requires the keystore and keystore_password properties be set e.g ssl_on=true, keystore=keystore.jks, keystore_password=password
+* port: Change the port that RestfulPi will run on. e.g. port=80
+* output_pins: pins to automatically provision on start up. Pins are comma seperated and in the format \<pin number\>:\<pin name\>.  e.g. output_pins=4:pin4,5:pin5
+* CORS_headers: include CORS headers for cross site requests.  e.g. CORS_headers:true
+* web_directory: RestfulPi will serve static web content from the specified folder.  e.g. web_directory=/home/pi/restfulpi/web
+* ssl_on: turn on ssl. This requires the keystore and keystore_password properties be set. e.g ssl_on=true, keystore=keystore.jks, keystore_password=password
 * basic_auth_on: turn on basic HTTP authentication using Jettys HashLoginService. This requires an additional properties file to specify users, passwords, and roles. The file is given in the auth_realm_properties option. The users in the realm properties must have the role "apiuser". Passwords shouldn't be stored in plain text. To avoid this run the command "java -cp restfulPi-*.jar org.eclipse.jetty.util.security.Password \<username\> \<password\>" to get OBF, MD5, and CRPT versions of the password, and use one of those in the basic authentication properties file. e.g. basic_auth_on=true, auth_realm_properties=/home/pi/restfulpi/realm.properties
