@@ -63,14 +63,7 @@ public class RestfulPiServer {
 	public RestfulPiServer(Properties customProperties) {
 		props.setProperties(customProperties);
 		setupContextAndServer();
-	}
-	
-	public RestfulPiServer(Properties customProperties, String jerseyClass) {
-		//TODO: set the extra api classes / packages. Or maybe just have any other API endpoint classes in the same package?
-		props.setProperties(customProperties);
-		setupContextAndServer();
-	}
-	
+	}	
 
 	public void start() {
 		try {
@@ -161,6 +154,7 @@ public class RestfulPiServer {
 		Constraint constraint = new Constraint();
 		constraint.setName("auth");
 		constraint.setAuthenticate(true);
+		//TODO: Change the role to be able to be set from the properties
 		constraint.setRoles(new String[] { "apiuser" });
 		ConstraintMapping mapping = new ConstraintMapping();
 		mapping.setPathSpec("/*");
